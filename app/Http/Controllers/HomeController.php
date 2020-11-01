@@ -8,6 +8,7 @@ use App\Models\Section;
 use Exception;
 use Goutte\Client;
 use Parsedown;
+use stdClass;
 
 class HomeController extends Controller
 {
@@ -19,8 +20,18 @@ class HomeController extends Controller
 
         $parsedown->setBreaksEnabled(true);
 
-        $reading  = Reading::where('publish_date', date('Y-m-d'))->first();
-        $prayer   = Prayer::where('day', date('l'))->first();
+        $reading  = Reading::where('publish_date', date('Y-m-d'))->firstOr(function () {
+            $reading = new stdClass();
+            $reading->passage = '';
+
+            return $reading;
+        });
+        $prayer   = Prayer::where('day', date('l'))->firstOr(function () {
+            $prayer = new stdClass();
+            $prayer->prayer = '';
+
+            return $prayer;
+        });
         $sections = Section::all();
 
         $indexedSections = [];
@@ -44,7 +55,7 @@ class HomeController extends Controller
                 });
             }
         } catch (Exception $exception) {
-            $this->readingText = $reading->passage;
+            $this->readingText = $reading->passage ?: '';
             $url = false;
         }
 

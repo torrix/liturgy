@@ -6,23 +6,23 @@
             <h1 class="uk-text-center">{{ date('l jS F Y', strtotime($date)) }}</h1>
 
             <h2 class="uk-text-center">Meeting details</h2>
-            {!! $sections['meetingDetails'] !!}
+            {!! $sections['meetingDetails'] ?? '' !!}
 
             <div class="uk-card uk-card-body uk-card-primary uk-padding uk-text-center">
-                {!! $sections['zoom'] !!}
+                {!! $sections['zoom'] ?? '' !!}
             </div>
 
             <h2 class="uk-text-center">Meeting expectations</h2>
-            {!! $sections['meetingExpectations'] !!}
+            {!! $sections['meetingExpectations'] ?? '' !!}
 
             <h2 class="uk-text-center">Opening</h2>
             <div class="uk-card uk-body uk-card-default uk-padding">
-                {!! $sections['opening'] !!}
+                {!! $sections['opening'] ?? '' !!}
             </div>
 
             <h2 class="uk-text-center">Declaration of faith</h2>
             <div class="uk-card uk-body uk-card-default uk-padding">
-                {!! $sections['declarationOfFaith'] !!}
+                {!! $sections['declarationOfFaith'] ?? '' !!}
             </div>
 
             <h2 class="uk-text-center">Scripture reading</h2>
@@ -43,12 +43,12 @@
 
             <h2 class="uk-text-center">Canticle</h2>
             <div class="uk-card uk-body uk-card-default uk-padding">
-                {!! $sections['canticle'] !!}
+                {!! $sections['canticle'] ?? '' !!}
             </div>
 
             <h2 class="uk-text-center">Blessing</h2>
             <div class="uk-card uk-body uk-card-default uk-padding">
-                {!! $sections['blessing'] !!}
+                {!! $sections['blessing'] ?? '' !!}
             </div>
 
             <hr class="uk-divider-icon">
