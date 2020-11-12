@@ -14,16 +14,19 @@ class HomeController extends Controller
 {
     private string $readingText;
 
-    public function index()
+    public function index($date = false)
     {
-        $parsedown = new Parsedown();
+        if (! $date) {
+            $date = date('Y-m-d');
+        }
 
+        $parsedown = new Parsedown();
         $parsedown->setBreaksEnabled(true);
 
-        $readings  = Reading::where('publish_date', date('Y-m-d'))->get();
+        $readings = Reading::where('publish_date', $date)->get();
 
-        $prayer   = Prayer::where('day', date('l'))->firstOr(function () {
-            $prayer = new stdClass();
+        $prayer   = Prayer::where('day', date('l', strtotime($date)))->firstOr(function () {
+            $prayer         = new stdClass();
             $prayer->prayer = '';
 
             return $prayer;
@@ -54,7 +57,7 @@ class HomeController extends Controller
                 }
             } catch (Exception $exception) {
                 $this->readingText = $reading->passage ?: '';
-                $url = false;
+                $url               = false;
             }
             $indexedReadings[] = [
                 'url'          => $url,
@@ -64,10 +67,10 @@ class HomeController extends Controller
         }
 
         return view('welcome', [
-            'date'         => session('date', date('Y-m-d')),
-            'prayer'       => $parsedown->text($prayer->prayer),
-            'sections'     => $indexedSections,
-            'readings'     => $indexedReadings,
+            'date'     => $date,
+            'prayer'   => $parsedown->text($prayer->prayer),
+            'sections' => $indexedSections,
+            'readings' => $indexedReadings,
         ]);
     }
 }
