@@ -25,16 +25,18 @@
                 {!! $sections['declarationOfFaith'] ?? '' !!}
             </div>
 
-            <h2 class="uk-text-center">Scripture reading</h2>
-            <div class="uk-card uk-body uk-card-default uk-padding">
-                <h3>{{ $readingTitle }}</h3>
-                <div class="gd-reading">
-                    {!! $readingText !!}
-                    <p class="uk-text-right uk-text-small">
-                        <a href="{{ $url }}" target="_blank">NRSV</a>
-                    </p>
+            @foreach($readings as $reading)
+                <h2 class="uk-text-center">Scripture reading</h2>
+                <div class="uk-card uk-body uk-card-default uk-padding">
+                    <h3>{{ $reading['readingTitle'] }}</h3>
+                    <div class="gd-reading">
+                        {!! $reading['readingText'] !!}
+                        <p class="uk-text-right uk-text-small">
+                            <a href="{{ $reading['url'] }}" target="_blank">NRSV</a>
+                        </p>
+                    </div>
                 </div>
-            </div>
+            @endforeach
 
             <h2 class="uk-text-center">Prayers for others</h2>
             <div class="uk-card uk-body uk-card-default uk-padding">

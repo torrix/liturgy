@@ -20,12 +20,8 @@ class HomeController extends Controller
 
         $parsedown->setBreaksEnabled(true);
 
-        $reading  = Reading::where('publish_date', date('Y-m-d'))->firstOr(function () {
-            $reading = new stdClass();
-            $reading->passage = '';
+        $readings  = Reading::where('publish_date', date('Y-m-d'))->get();
 
-            return $reading;
-        });
         $prayer   = Prayer::where('day', date('l'))->firstOr(function () {
             $prayer = new stdClass();
             $prayer->prayer = '';
@@ -39,33 +35,39 @@ class HomeController extends Controller
             $indexedSections[$section->section] = $parsedown->text(trim($section->content));
         }
 
-        try {
-            $client = new Client();
+        $indexedReadings = [];
+        foreach ($readings as $reading) {
+            try {
+                $client = new Client();
 
-            $this->readingText = '';
+                $this->readingText = '';
 
-            $url = 'http://bible.oremus.org/?vnum=no&passage=' . $reading->passage;
+                $url = 'http://bible.oremus.org/?vnum=no&passage=' . $reading->passage;
 
-            $crawler = $client->request('GET', $url);
+                $crawler = $client->request('GET', $url);
 
-            if ($crawler !== null) {
-                $crawler->filter('.bibletext')->each(function ($node) {
-                    // $this->readingText .= $node->html();
-                    $this->readingText .= strip_tags($node->html(), '<span><h2><br><p><div><sup>');
-                });
+                if ($crawler !== null) {
+                    $crawler->filter('.bibletext')->each(function ($node) {
+                        // $this->readingText .= $node->html();
+                        $this->readingText .= strip_tags($node->html(), '<span><h2><br><p><div><sup>');
+                    });
+                }
+            } catch (Exception $exception) {
+                $this->readingText = $reading->passage ?: '';
+                $url = false;
             }
-        } catch (Exception $exception) {
-            $this->readingText = $reading->passage ?: '';
-            $url = false;
+            $indexedReadings[] = [
+                'url'          => $url,
+                'readingTitle' => $reading->passage,
+                'readingText'  => $parsedown->text($this->readingText),
+            ];
         }
 
         return view('welcome', [
             'date'         => session('date', date('Y-m-d')),
-            'url'          => $url,
-            'readingTitle' => $reading->passage,
-            'readingText'  => $parsedown->text($this->readingText),
             'prayer'       => $parsedown->text($prayer->prayer),
             'sections'     => $indexedSections,
+            'readings'     => $indexedReadings,
         ]);
     }
 }
